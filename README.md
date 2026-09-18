@@ -33,6 +33,9 @@ StarryLink 是一个端到端的对话式 AI 客服系统：能查订单、查�
 
 ## 快速开始
 
+> 在WSL，Ubuntu，docker配置好之后，可以让 Claude Code / Cursor 一键起：在 IDE 里说一句「按 DEPLOY.md 把项目部署起来」，
+> AI 会照着 [DEPLOY.md](DEPLOY.md) 走完下面的全流程，密钥配置、容器启动、知识库构建、验收一把过。
+
 ```bash
 # 1. 装依赖
 uv sync
