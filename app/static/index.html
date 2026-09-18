@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>喵喵优选 · 智能客服</title>
+  <title>StarryLink · 智能客服</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
   <style>
     :root {
@@ -456,8 +456,8 @@
     <header>
       <div class="avatar lg" data-cat></div>
       <div class="head-meta">
-        <span class="name">小喵 · 智能客服</span>
-        <span class="status"><span class="dot-online"></span>ONLINE · 喵喵优选</span>
+        <span class="name">小星 · 智能客服</span>
+        <span class="status"><span class="dot-online"></span>ONLINE · StarryLink</span>
       </div>
       <div class="spacer"></div>
       <button id="new-chat" type="button">＋ 新对话</button>
@@ -467,7 +467,7 @@
 
     <footer>
       <div class="composer">
-        <textarea id="input" rows="1" placeholder="输入消息,和小喵聊聊吧~(回车发送 / Shift+回车换行)"></textarea>
+        <textarea id="input" rows="1" placeholder="输入消息,和小星聊聊吧~(回车发送 / Shift+回车换行)"></textarea>
         <button id="send" type="button" aria-label="发送">
           <svg viewBox="0 0 16 16" shape-rendering="crispEdges" fill="currentColor">
             <rect x="2" y="7" width="8" height="2"/><rect x="8" y="5" width="2" height="2"/>
@@ -477,7 +477,7 @@
           </svg>
         </button>
       </div>
-      <p class="foot-note">小喵是 AI 助手,涉及具体订单会为你转接人工核实</p>
+      <p class="foot-note">小星是 AI 助手,涉及具体订单会为你转接人工核实</p>
     </footer>
     </div><!-- /.main -->
   </div>
@@ -486,7 +486,7 @@
   <div class="modal-mask" id="ticketMask">
     <div class="ticket-modal" role="dialog" aria-modal="true" aria-labelledby="ticketTitle">
       <h3 id="ticketTitle">创建工单</h3>
-      <p class="sub">小喵会把问题登记成工单跟进处理</p>
+      <p class="sub">小星会把问题登记成工单跟进处理</p>
       <div class="ticket-field">
         <label for="ticketType">反馈类别 <span class="req">*</span></label>
         <select id="ticketType">
@@ -511,7 +511,7 @@
   <div class="modal-mask" id="refundMask">
     <div class="ticket-modal" role="dialog" aria-modal="true" aria-labelledby="refundTitle">
       <h3 id="refundTitle">提交退款工单</h3>
-      <p class="sub">确认订单与退款原因后提交,小喵会为您登记退款申请</p>
+      <p class="sub">确认订单与退款原因后提交,小星会为您登记退款申请</p>
       <div class="ticket-field">
         <label for="refundOrder">订单号</label>
         <input id="refundOrder" type="text" readonly />
@@ -591,8 +591,8 @@
       wrap.className = "empty";
       wrap.innerHTML =
         '<div class="mascot">' + CAT_SVG + "</div>" +
-        "<h1>你好,我是小喵</h1>" +
-        "<p>喵喵优选的智能客服,商品、订单、售后都能问我~</p>" +
+        "<h1>你好,我是小星</h1>" +
+        "<p>StarryLink的智能客服,商品、订单、售后都能问我~</p>" +
         '<div class="chips"></div>';
       const chips = wrap.querySelector(".chips");
       for (const s of SUGGESTIONS) {

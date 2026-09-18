@@ -9,12 +9,12 @@ def ask(messages):
 
 
 print("== 两次各问各的 ==")
-print(ask([{"role": "user", "content": "我叫喵喵"}])[0])
+print(ask([{"role": "user", "content": "我叫Starry"}])[0])
 print(ask([{"role": "user", "content": "我叫什么？"}])[0])
 
 print("\n== 把聊过的话一起发过去 ==")
 history = []
-for text in ["我叫喵喵", "我叫什么？"]:
+for text in ["我叫Starry", "我叫什么？"]:
     history.append({"role": "user", "content": text})
     reply, tokens = ask(history)
     history.append({"role": "assistant", "content": reply})

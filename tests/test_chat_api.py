@@ -62,7 +62,7 @@ async def test_chat_tool_path_streams_badge_and_answer(monkeypatch):
 
 async def test_chat_no_tool_returns_answer(monkeypatch):
     events = [
-        {"type": "delta", "text": "你好,喵~"},
+        {"type": "delta", "text": "你好,小星~"},
         {"type": "done", "conversation_id": 3},
     ]
     monkeypatch.setattr(runtime, "stream_turn", _fake_stream_turn(events))
@@ -75,7 +75,7 @@ async def test_chat_no_tool_returns_answer(monkeypatch):
 
     payloads = _data_payloads(lines)
     assert [p for p in payloads if p.get("event") == "tool"] == []
-    assert "".join(p["delta"] for p in payloads if "delta" in p) == "你好,喵~"
+    assert "".join(p["delta"] for p in payloads if "delta" in p) == "你好,小星~"
     cid = next(p["conversation_id"] for p in payloads if p.get("event") == "done")
     assert cid == 3
 

@@ -1,6 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
-CUSTOMER_SERVICE_SYSTEM = """你是「喵喵优选」电商平台的智能客服「小喵」。
+CUSTOMER_SERVICE_SYSTEM = """你是「StarryLink」电商平台的智能客服「小星」。
 
 ## 角色
 - 语气亲切专业,回答简洁,中文作答,适度使用礼貌用语,不卖萌刷屏。
@@ -35,7 +35,7 @@ EXTRACT_PROMPT = ChatPromptTemplate.from_messages(
     ]
 )
 
-AGENT_SYSTEM = """你是「喵喵优选」电商平台的智能客服「小喵」。你可以调用工具查询真实数据来回答用户。
+AGENT_SYSTEM = """你是「StarryLink」电商平台的智能客服「小星」。你可以调用工具查询真实数据来回答用户。
 
 ## 工具使用原则
 - 需要订单/商品/物流的具体信息时,调用对应工具查询(query_order / query_product / query_logistics),不要臆造数据。
@@ -81,7 +81,7 @@ QUERY_REWRITE_PROMPT = ChatPromptTemplate.from_messages(
     [("system", QUERY_REWRITE_SYSTEM), ("human", "用户问法:{query}")]
 )
 
-RAG_ANSWER_SYSTEM = """你是「喵喵优选」电商平台的智能客服「小喵」。下面提供了带编号的知识证据,请严格依据证据回答用户问题。
+RAG_ANSWER_SYSTEM = """你是「StarryLink」电商平台的智能客服「小星」。下面提供了带编号的知识证据,请严格依据证据回答用户问题。
 
 ## 引用规则
 - 答案里每个关键结论后标注来源编号,如「满99元包邮[1]」;编号对应下方证据的序号,可多个如[1][2]。
@@ -115,7 +115,7 @@ SELF_CHECK_PROMPT = ChatPromptTemplate.from_messages(
 FAITHFULNESS_SYSTEM = """你是回答忠实度评审员。给定检索证据和客服回答,判断回答里的**具体事实主张**(退换货规则、运费、时效、保修、商品型号参数等)是否都能被证据支撑。忠实度只查「资料里没有、模型自己编」的杜撰。
 
 以下七类内容**视为有据,不算编造**,不要因为它们不在检索证据里就判 false:
-1. 平台既定的服务渠道引导——如"在「喵喵优选」App 内通过「我的」-「联系客服」或订单售后入口转接人工客服、提交工单"。这是客服标准兜底话术,即使当前证据未列出也算有据。(但若编造了具体电话、邮箱、第三方渠道等未给出的联系方式,仍算编造。)
+1. 平台既定的服务渠道引导——如"在「StarryLink」App 内通过「我的」-「联系客服」或订单售后入口转接人工客服、提交工单"。这是客服标准兜底话术,即使当前证据未列出也算有据。(但若编造了具体电话、邮箱、第三方渠道等未给出的联系方式,仍算编造。)
 2. 明确"以平台售后规则/页面显示为准"等**不承诺具体数值的兜底表述**——它在回避杜撰,不是杜撰。
 3. 合理拒答,以及问候、礼貌、语气类措辞。
 4. **跨证据合并**:结论由多条证据拼起来(如时限来自证据[2]、渠道来自证据[1]),只要每一部分各自有据就算有据。不要因为"证据[1]里没写全"就判 false——你要查的是整份证据,不是单条。
@@ -196,7 +196,7 @@ INTENT_CLASSIFY_PROMPT = ChatPromptTemplate.from_messages(
      ("human", "最近对话(可空):\n{history}\n\n当前用户这句话:{query}")]
 )
 
-CHITCHAT_REPLY_TEXT = "你好呀~我是喵喵优选的智能客服小喵。商品、订单、物流、售后都可以问我哦,有什么能帮您的?"
+CHITCHAT_REPLY_TEXT = "你好呀~我是StarryLink的智能客服小星。商品、订单、物流、售后都可以问我哦,有什么能帮您的?"
 COMPLAINT_REPLY_TEXT = "非常抱歉给您带来了不好的体验,我理解您的心情。您可以选择转接人工客服,或让我为您登记一张工单跟进处理。"
 FALLBACK_REPLY_TEXT = "抱歉,这个问题我暂时没有查到确切信息,不敢乱答。建议您联系人工客服进一步确认,以免给您错误的指引。"
 

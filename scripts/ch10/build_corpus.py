@@ -32,7 +32,7 @@ class _SimBatch(BaseModel):
     items: list[_SimItem]
 
 
-SIMULATE_PROMPT = """你是电商客服语料造数员。为猫用品电商「喵喵优选」(卖猫粮、冻干、猫零食、猫砂盆、\
+SIMULATE_PROMPT = """你是电商客服语料造数员。为猫用品电商「StarryLink」(卖猫粮、冻干、猫零食、猫砂盆、\
 猫抓板、猫窝、猫爬架、猫碗、逗猫棒、项圈等)生成 {n} 条模拟用户问题,全部命中主题类目「{name}」。
 
 17 类权威术语表:
