@@ -1,77 +1,122 @@
-# StarryLink — 电商智能客服 Agent
+# StarryLink
 
-《AI Agent 智能客服实战》的配套源码。一个能查订单物流、答政策 FAQ、走退款子流程、
-挖知识补库、还能微调一个主题分类器的完整客服系统。
+> An AI-powered e-commerce customer service agent built on LangGraph + FastAPI + Milvus + MySQL. Supports order / logistics queries, knowledge-base Q&A, intent dispatch, refund workflows, knowledge harvesting from conversations, and topic classification.
 
-代码是随课程一章章长出来的，不分支：ch01 一个纯对话接口起步，到 ch10 收尾时是下面这套东西。
+StarryLink is Starry's personal project.
 
-## 技术栈
+## Features
 
-FastAPI + LangGraph / LangChain + SQLAlchemy / MySQL + Milvus。
+- **Multi-turn chat** with streaming, structured extraction, and coreference resolution
+- **5 built-in tools**: order, logistics, FAQ, product, refund ticket creation
+- **Hybrid retrieval** (BM25 + vector + RRF + reranker) over a self-managed knowledge base
+- **LangGraph stateful agent** with intent dispatch and refund interrupt/resume
+- **Self-hosted Langfuse** for LLM trace + cost accounting (data stays on your machine)
+- **Flywheel**: mine Q&A pairs from conversations to grow the knowledge base
+- **Topic classifier** with ONNX inference
 
-聊天、嵌入、重排三组上游各自直连，没有网关那一层。模型名和地址都在 `.env` 里配
-(`CHAT_*` / `EMBED_*` / `RERANK_*` 三组)，换供应商、换模型不用改代码。
+## Tech Stack
 
-## 跑起来
+| Layer | Tech |
+|---|---|
+| Web | FastAPI + Uvicorn |
+| Agent | LangGraph + LangChain |
+| LLM clients | OpenAI-compatible (chat / embed / rerank, no gateway) |
+| Storage | MySQL 8 + Milvus Standalone + MinIO + etcd |
+| Observability | Langfuse v3 (self-hosted, OTLP) |
+| Package manager | uv |
+| Container | Docker Compose v2 |
+
+## Quick Start
 
 ```bash
-cp .env.example .env      # 填 CHAT_* / EMBED_* / RERANK_* 三组
-docker compose up -d      # MySQL
-make seed                 # 灌业务测试数据
-make dev                  # 依赖容器 + MCP :8101/:8102 + 应用 :8000
+# 1. Configure (fill CHAT_* / EMBED_* / RERANK_* in .env)
+cp .env.example .env
+$EDITOR .env
+
+# 2. Data services
+docker compose up -d
+
+# 3. Seed business data
+make seed
+
+# 4. Build knowledge base
+make kb-build
+make kb-vectorize
+
+# 5. App + MCP servers
+make dev
 ```
 
-浏览器打开 <http://localhost:8000> 就是聊天页。
+Open <http://localhost:8000> for the chat UI.
 
-**详细的安装、配置、建知识库、常见问题，看飞书那篇「StarryLink 项目源码下载」**，
-这里只留一条能把服务拉起来的最短路径。两边写岔了以那篇为准。
+To start Langfuse (for observability):
 
-## 代码怎么组织
+```bash
+make langfuse-up
+# Open http://localhost:3000
+```
 
-| 位置 | 装的是什么 |
-| - | - |
-| `app/api/` | HTTP 入口。聊天、Agent、知识库录入、复核、验收页、成本看板 |
-| `app/graph/` | LangGraph 那张图。`state` 状态、`nodes` 节点、`routing` 分流规则、`build` 组装 |
-| `app/core/` | 单点能力。上游客户端、检索、重排、意图、指代、摘要、置信度、飞轮、可观测 |
-| `app/kb/` | 知识怎么进库。切块、嵌入、双写 MySQL 与 Milvus、去重、从对话里挖问答对 |
-| `app/tools/` | 工具系统。内置 `@tool`、MCP 客户端、注册表、统一执行引擎 |
-| `app/db/` | 表模型与仓储 |
-| `app/static/` | 前端页面。聊天、知识库录入、飞轮待审、观测与成本、主题分布、分类器验收 |
-| `mcp_servers/` | 两台业务 MCP Server，物流和售后各一台，独立进程 |
-| `sql/` | 各章的建表与迁移，容器首启按文件名顺序自动执行 |
-| `scripts/` | 建库、评估、微调这些离线活 |
-| `docs/superpowers/` | 各章的 spec 和 plan。课程实战篇教的就是这套流程，留着当范本 |
-| `primer/` | 前置篇两篇的配套例子（大模型是什么、Agent 怎么动起来），各自独立，跟项目其他代码没有依赖关系，`.env` 用同一份 |
+## Project Layout
 
-## 各章长出了什么，怎么验
+| Path | What lives here |
+|---|---|
+| `app/api/` | HTTP endpoints (chat, agent, KB, review, eval, cost) |
+| `app/graph/` | LangGraph state machine (nodes, routing, build) |
+| `app/core/` | Single-purpose modules (LLM client, retrieval, intent, coref, summary, confidence, observability) |
+| `app/kb/` | Knowledge base: chunking, embedding, MySQL+Milvus dual-write, dedup, mining |
+| `app/tools/` | Tool system: built-in `@tool`, MCP client, registry, executor |
+| `app/db/` | SQLAlchemy models and repositories |
+| `app/static/` | Frontend HTML pages (SSR, no build step) |
+| `mcp_servers/` | Two business MCP servers (logistics, aftersales) |
+| `sql/` | Per-chapter DDL / seed SQL, applied at first boot |
+| `scripts/` | Build / eval / tune / observe offline jobs |
+| `docs/superpowers/` | Specs and plans |
+| `primer/` | Primer examples (LLM, agent basics) — independent, share `.env` |
 
-`make test` 跑全部单测，不打真实模型。下面这些要真服务在跑。
+## Pages
 
-| 章 | 这一章长出来的东西 | 验收 |
-| - | - | - |
-| ch01 | 流式对话、结构化提取 | `make eval` |
-| ch02 | 五个 `@tool` 业务工具，单轮 Function Calling | `make eval-agent` |
-| ch03 | 切块、嵌入、MySQL 与 Milvus 双写、对话挖知识 | `make kb-build` `make kb-vectorize` `make eval-retrieval` |
-| ch04 | 混合检索、RRF、重排、Query 改写、四策略评估 | `make smoke-rag` `make eval-rag` |
-| ch05 | LangGraph workflow 骨架 + 主力 Agent 的 ReAct 环 | `make eval-ch05` |
-| ch06 | 分流器、指代消解、退款子流程的 interrupt/resume | `make smoke-interrupt` `make eval-ch06` |
-| ch07 | 上下文管理。滑窗、摘要、前缀缓存 | `make eval-ch07` |
-| ch08 | 工具系统。MCP 动态发现、统一执行引擎、审计日志 | `make eval-ch08` |
-| ch09 | Langfuse 自部署、数据飞轮、成本账 | `make langfuse-up` `make flywheel` `make eval-flywheel` `make cost-report` |
-| ch10 | 主题分类器。语料、微调、阈值扫描、ONNX 推理服务 | `make ch10-corpus` `make ch10-train` `make ch10-eval` |
+| URL | Page |
+|---|---|
+| `/` | Chat |
+| `/kb` | Knowledge base ingest |
+| `/review` | Flywheel review queue |
+| `/observability` | Cost & observability dashboard |
+| `/topics` | Topic distribution |
+| `/acceptance` | Classifier acceptance |
 
-每条命令的前置条件（哪些服务得先起、哪张表得先建）写在飞书那篇文档的「各章验收」段里。
-`make help` 也能看到带说明的完整目标清单。
+## Ports
 
-## 端口
-
-| 端口 | 是什么 |
-| - | - |
-| 8000 | 应用 |
-| 8101 / 8102 | 业务 MCP Server，物流 / 售后 |
-| 8110 | ch10 主题分类器推理服务（`make classifier-up` 之后） |
-| 3000 | Langfuse（`make langfuse-up` 之后） |
+| Port | Service |
+|---|---|
+| 8000 | App |
+| 8101 / 8102 | MCP servers (logistics / aftersales) |
+| 8110 | Topic classifier (after `make classifier-up`) |
+| 3000 | Langfuse web (after `make langfuse-up`) |
 | 19530 | Milvus |
 
-应用那几个页面：`/` 聊天、`/kb` 知识库录入、`/review` 飞轮待审、`/observability` 观测与成本、
-`/topics` 主题分布、`/acceptance` 分类器验收。
+## Development
+
+```bash
+make test         # unit tests
+make eval         # chat eval
+make eval-agent   # tool calling
+make kb-build     # KB build
+make kb-vectorize # vectorize KB
+make eval-rag     # retrieval eval
+make eval-ch05    # LangGraph
+make eval-ch06    # interrupt
+make eval-ch07    # context
+make eval-ch08    # tools
+make cost-report  # cost
+make ch10-corpus  # ch10 corpus
+make ch10-train   # ch10 train
+make ch10-eval    # ch10 eval
+```
+
+## License
+
+© 2026 Starry. All rights reserved.
+
+## Contact
+
+GitHub: [@Starry-1234](https://github.com/Starry-1234)
