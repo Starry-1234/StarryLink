@@ -115,7 +115,7 @@ make ch10-eval    # ch10 eval
 
 ## License
 
-© 2026 Starry. All rights reserved.
+MIT — see [LICENSE](LICENSE).
 
 ## Contact
 
