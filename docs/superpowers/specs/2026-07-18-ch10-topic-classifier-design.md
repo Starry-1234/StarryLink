@@ -1,6 +1,6 @@
 # ch10 · 模型微调:多标签主题分类器(RoBERTa-wwm-ext 全参微调)设计
 
-> 对齐课程 mewhelp-course/ch10-fine-tuning/README.md,不漏功能点。
+> 对齐课程 starrylink-course/ch10-fine-tuning/README.md,不漏功能点。
 > 目标:把飞轮攒下的低置信度问题按 17 类主题批量归类,喂给飞轮后台看各主题分布,决定先补哪块知识。
 
 ## 1. 背景与目标

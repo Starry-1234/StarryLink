@@ -10,17 +10,17 @@ help:  ## 列出带说明的目标
 	  | sed 's/:.*## /\t/' | sort | awk -F'\t' '{printf "  %-22s %s\n", $$1, $$2}'
 
 # ch09: Langfuse 自部署观测栈(web:3000 + worker + postgres + clickhouse + redis + minio)
-# -p 独立 project 名:不加会与主 compose 同落 mewhelp project,两边的 minio 服务同名相撞
+# -p 独立 project 名:不加会与主 compose 同落 starrylink project,两边的 minio 服务同名相撞
 langfuse-up:
-	docker compose -p mewhelp-langfuse -f docker-compose.langfuse.yml up -d
-	@echo "Langfuse 起中: http://localhost:3000 (admin@mewhelp.local / mewhelp123)"
+	docker compose -p starrylink-langfuse -f docker-compose.langfuse.yml up -d
+	@echo "Langfuse 起中: http://localhost:3000 (admin@starrylink.local / starrylink123)"
 	@echo "首次就绪约 2-3 分钟;key 已 headless 预置,写 .env:"
-	@echo "  LANGFUSE_PUBLIC_KEY=pk-lf-mewhelp-local"
-	@echo "  LANGFUSE_SECRET_KEY=sk-lf-mewhelp-local"
+	@echo "  LANGFUSE_PUBLIC_KEY=pk-lf-starrylink-local"
+	@echo "  LANGFUSE_SECRET_KEY=sk-lf-starrylink-local"
 	@echo "  LANGFUSE_BASE_URL=http://localhost:3000"
 
 langfuse-down:
-	docker compose -p mewhelp-langfuse -f docker-compose.langfuse.yml down
+	docker compose -p starrylink-langfuse -f docker-compose.langfuse.yml down
 
 calibrate-confidence:  ## ch09 置信度阈值校准(需 milvus + 上游可调通 + 知识库已建)
 	PYTHONPATH=. uv run python scripts/calibrate_confidence.py
@@ -117,7 +117,7 @@ judge-check:  ## 忠实度裁判回归(重放台账个案的证据+答案,和人
 	PYTHONPATH=. uv run python scripts/judge_check.py
 
 seed:
-	docker exec -i mewhelp-mysql mysql --default-character-set=utf8mb4 -uroot -proot mewhelp < sql/ch02-seed.sql
+	docker exec -i starrylink-mysql mysql --default-character-set=utf8mb4 -uroot -proot starrylink < sql/ch02-seed.sql
 
 test:
 	uv run pytest -v
@@ -157,14 +157,14 @@ eval-retrieval:
 	PYTHONPATH=. uv run python scripts/eval_retrieval.py
 
 seed-conv:
-	docker exec -i mewhelp-mysql mysql --default-character-set=utf8mb4 -uroot -proot mewhelp < sql/ch03-seed.sql
+	docker exec -i starrylink-mysql mysql --default-character-set=utf8mb4 -uroot -proot starrylink < sql/ch03-seed.sql
 
 eval-mining:
 	PYTHONPATH=. uv run python scripts/eval_mining.py
 
 # 干净重建知识库:清 MySQL 两表 + drop Milvus collection(ch04 Standalone 无独占锁,app 可不停)
 kb-reset:
-	docker exec -i mewhelp-mysql mysql -uroot -proot mewhelp -e "SET FOREIGN_KEY_CHECKS=0; DELETE FROM knowledge_chunks; DELETE FROM qa_extraction_staging; SET FOREIGN_KEY_CHECKS=1;"
+	docker exec -i starrylink-mysql mysql -uroot -proot starrylink -e "SET FOREIGN_KEY_CHECKS=0; DELETE FROM knowledge_chunks; DELETE FROM qa_extraction_staging; SET FOREIGN_KEY_CHECKS=1;"
 	PYTHONPATH=. uv run python -c "from app.kb import milvus_client as m; m.drop(m.get_client(), 'knowledge')"
 	@echo "KB 已重置(Milvus Standalone drop collection)。重跑: make kb-build && make kb-vectorize"
 

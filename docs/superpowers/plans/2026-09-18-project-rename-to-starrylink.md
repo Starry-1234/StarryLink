@@ -2,10 +2,10 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 把 `/home/starry/starrylink`（原 MewHelp 课程配套项目）改造成 Starry 的个人项目 StarryLink：抹除原作者痕迹、项目改名、新 README、推到 GitHub。
+**Goal:** 把 `/home/starry/starrylink`（原 StarryLink 课程配套项目）改造成 Starry 的个人项目 StarryLink：抹除原作者痕迹、项目改名、新 README、推到 GitHub。
 
 **Architecture:** 不改业务代码逻辑,只做：
-1. 字符串替换（MewHelp → StarryLink, xiaolincoding 等 → 移除）
+1. 字符串替换（StarryLink → StarryLink, xiaolincoding 等 → 移除）
 2. 删除每个文件开头的"来源"注释块
 3. 重写 README/DEPLOY.md 顶层文档
 4. 多 commit 推到 GitHub 新仓库 `Starry-1234/StarryLink`
@@ -23,7 +23,7 @@
   # Agent网站:xiaolinnote.com
   # 简历模版:jianli.xiaolinnote.com
   ```
-- 痕迹形态 2:字符串 `xiaolincoding.com` / `xiaolinnote.com` / `jianli.xiaolinnote.com` / `公众号@小林coding` / `MewHelp` / `mewhelp` 散落各处
+- 痕迹形态 2:字符串 `xiaolincoding.com` / `xiaolinnote.com` / `jianli.xiaolinnote.com` / `公众号@小林coding` / `StarryLink` / `starrylink` 散落各处
 - 痕迹形态 3:DEPLOY.md 提到"本仓库改动三处"
 - 痕迹形态 4:README.md 整篇是课程配套源码风格
 - GitHub 仓库已建好:`https://github.com/Starry-1234/StarryLink` (HEAD = dc3bde6...)
@@ -34,8 +34,8 @@
 ## Commit 顺序
 
 ```
-1. chore: initial commit from MewHelp import         (baseline 状态)
-2. chore: rename project MewHelp → StarryLink          (全项目字符串替换)
+1. chore: initial commit from StarryLink import         (baseline 状态)
+2. chore: rename project StarryLink → StarryLink          (全项目字符串替换)
 3. chore: remove original author headers              (删 4 行注释块)
 4. docs: rewrite README as open-source project README  (新 README)
 5. docs: rewrite DEPLOY.md                            (清理原仓库引用)
@@ -74,14 +74,14 @@ ls -la .gitignore  # 应该存在 462 字节
 cd /home/starry/starrylink
 git add .
 git status --short | wc -l   # 应该几百个文件
-git commit -m "chore: initial commit from MewHelp import"
+git commit -m "chore: initial commit from StarryLink import"
 ```
 
 预期:`Created initial commit`,commit hash 是 7 位 hex。
 
 ---
 
-## Task 2: 重命名项目 MewHelp → StarryLink（全项目字符串替换）
+## Task 2: 重命名项目 StarryLink → StarryLink（全项目字符串替换）
 
 **Files:**
 - Modify: `/home/starry/starrylink/` 全项目,排除 .venv / node_modules / __pycache__ / .git / data/*_checkpoints.sqlite
@@ -90,17 +90,17 @@ git commit -m "chore: initial commit from MewHelp import"
 
 | 旧 | 新 |
 |---|---|
-| `MewHelp` | `StarryLink` |
-| `mewhelp` | `starrylink` |
-| `mewhelp-`（docker 容器/卷前缀）| `starrylink-` |
+| `StarryLink` | `StarryLink` |
+| `starrylink` | `starrylink` |
+| `starrylink-`（docker 容器/卷前缀）| `starrylink-` |
 
-**注意**:docker compose 里 `mewhelp-mysql` `mewhelp-mysql-data` 这种命名要保留 docker 容器兼容性——但既然我们重做整个 docker compose stack,改名是 OK 的。**但 `mewhelp-mysql-data` 卷里已经有数据**,改卷名 = 数据丢。建议:**保持卷名** `mewhelp-mysql-data`（不动）;改 container name `mewhelp-mysql` → `starrylink-mysql`。类似处理 minio/etcd/milvus。
+**注意**:docker compose 里 `starrylink-mysql` `starrylink-mysql-data` 这种命名要保留 docker 容器兼容性——但既然我们重做整个 docker compose stack,改名是 OK 的。**但 `starrylink-mysql-data` 卷里已经有数据**,改卷名 = 数据丢。建议:**保持卷名** `starrylink-mysql-data`（不动）;改 container name `starrylink-mysql` → `starrylink-mysql`。类似处理 minio/etcd/milvus。
 
 - [ ] **Step 1: 替换字符串,先列出会影响哪些文件**
 
 ```bash
 cd /home/starry/starrylink
-grep -rl "MewHelp\|mewhelp" . \
+grep -rl "StarryLink\|starrylink" . \
   --exclude-dir=.venv --exclude-dir=node_modules --exclude-dir=.git \
   --exclude-dir=__pycache__ \
   --exclude="*.sqlite*" 2>/dev/null | sort > /tmp/rename_files.txt
@@ -116,8 +116,8 @@ cd /home/starry/starrylink
 # 区分大小写替换
 while IFS= read -r f; do
   sed -i \
-    -e 's/MewHelp/StarryLink/g' \
-    -e 's/mewhelp/starrylink/g' \
+    -e 's/StarryLink/StarryLink/g' \
+    -e 's/starrylink/starrylink/g' \
     "$f"
 done < /tmp/rename_files.txt
 ```
@@ -127,7 +127,7 @@ done < /tmp/rename_files.txt
 ```bash
 cd /home/starry/starrylink
 # 排除 data 里的 sqlite 和 .git
-grep -rn "MewHelp\|mewhelp" . \
+grep -rn "StarryLink\|starrylink" . \
   --exclude-dir=.venv --exclude-dir=node_modules --exclude-dir=.git \
   --exclude-dir=__pycache__ \
   --exclude="*.sqlite*" 2>/dev/null | head -20
@@ -138,7 +138,7 @@ grep -rn "MewHelp\|mewhelp" . \
 - [ ] **Step 4: 验证 docker compose 里卷名保留**
 
 ```bash
-grep -E "mewhelp-mysql-data|mewhelp-mysql-etcd|mewhelp-milvus-data|mewhelp-milvus-etcd|mewhelp-milvus-minio" \
+grep -E "starrylink-mysql-data|starrylink-mysql-etcd|starrylink-milvus-data|starrylink-milvus-etcd|starrylink-milvus-minio" \
   /home/starry/starrylink/docker-compose.yml
 ```
 
@@ -161,7 +161,7 @@ head -20 pyproject.toml
 cd /home/starry/starrylink
 git add -A
 git diff --cached --stat | tail -5
-git commit -m "refactor: rename project MewHelp to StarryLink"
+git commit -m "refactor: rename project StarryLink to StarryLink"
 ```
 
 ---
@@ -314,7 +314,7 @@ cp /home/starry/starrylink/README.md /tmp/README.old.md
 
 ```bash
 head -30 /home/starry/starrylink/README.md
-grep -n "MewHelp\|xiaolin\|小林" /home/starry/starrylink/README.md
+grep -n "StarryLink\|xiaolin\|小林" /home/starry/starrylink/README.md
 ```
 
 预期:没有原作者字样。
@@ -366,32 +366,32 @@ git commit -m "docs: rewrite DEPLOY.md for StarryLink"
 - [ ] **Step 1: 检查现状**
 
 ```bash
-grep -n "container_name\|mewhelp-" /home/starry/starrylink/docker-compose.yml | head -10
-grep -n "container_name\|mewhelp-" /home/starry/starrylink/docker-compose.langfuse.yml | head -10
+grep -n "container_name\|starrylink-" /home/starry/starrylink/docker-compose.yml | head -10
+grep -n "container_name\|starrylink-" /home/starry/starrylink/docker-compose.langfuse.yml | head -10
 ```
 
-- [ ] **Step 2: 重命名容器（不重命名数据卷,保留 `mewhelp-` 命名的卷以保护现有数据）**
+- [ ] **Step 2: 重命名容器（不重命名数据卷,保留 `starrylink-` 命名的卷以保护现有数据）**
 
-把 `container_name: mewhelp-mysql` → `container_name: starrylink-mysql` 等。但**数据卷名保留**(因为已经跑过了有数据)。
+把 `container_name: starrylink-mysql` → `container_name: starrylink-mysql` 等。但**数据卷名保留**(因为已经跑过了有数据)。
 
-但是 sed -e 's/mewhelp/starrylink/g' 在 Task 2 已经把所有 `mewhelp-` 改了。所以这一步主要是验证 + 回滚数据卷名。
+但是 sed -e 's/starrylink/starrylink/g' 在 Task 2 已经把所有 `starrylink-` 改了。所以这一步主要是验证 + 回滚数据卷名。
 
 - [ ] **Step 3: 验证现有 compose 还能跑**
 
 ```bash
 cd /home/starry/starrylink
 docker compose config --quiet && echo OK
-docker compose -p mewhelp-langfuse -f docker-compose.langfuse.yml --env-file /tmp/langfuse.env config --quiet && echo OK
+docker compose -p starrylink-langfuse -f docker-compose.langfuse.yml --env-file /tmp/langfuse.env config --quiet && echo OK
 ```
 
 预期:都 OK。
 
-- [ ] **Step 4: 如果上一步发现数据卷名被错改,Edit 改回 `mewhelp-mysql-data` 等**
+- [ ] **Step 4: 如果上一步发现数据卷名被错改,Edit 改回 `starrylink-mysql-data` 等**
 
 ```bash
 # 找是否被改了
 grep -E "starrylink-mysql-data|starrylink-milvus" /home/starry/starrylink/docker-compose.yml
-# 如果有,改成 mewhelp-* 旧名
+# 如果有,改成 starrylink-* 旧名
 ```
 
 - [ ] **Step 5: Commit**
@@ -419,7 +419,7 @@ cat /home/starry/starrylink/pyproject.toml | head -10
 - [ ] **Step 2: 改 name**
 
 ```
-name = "mewhelp"  →  name = "starrylink"
+name = "starrylink"  →  name = "starrylink"
 ```
 
 - [ ] **Step 3: 验证 Python 仍能 import**
@@ -636,14 +636,14 @@ GitHub: [@Starry-1234](https://github.com/Starry-1234)
 
 - [x] Spec coverage: 改名 ✓ Task 2, 抹痕迹 ✓ Task 3, README ✓ Task 4, DEPLOY ✓ Task 5, push ✓ Task 8
 - [x] Placeholder scan: 没有 "TBD / TODO / 类似 Task N" 等占位
-- [x] Type / 命名一致: project rename 用一致映射 (`MewHelp → StarryLink`, `mewhelp → starrylink`)
+- [x] Type / 命名一致: project rename 用一致映射 (`StarryLink → StarryLink`, `starrylink → starrylink`)
 - [x] Risk 标注: Task 6 标注了"数据卷名要保留否则数据丢"
 - [x] Plan 可独立执行:每步有具体命令、预期输出、commit message
 
 ## 执行后验收
 
 - [ ] `git log --oneline` 看到 8 个 commit
-- [ ] `grep -r "xiaolincoding\|xiaolinnote\|公众号@小林\|MewHelp\|mewhelp" --exclude-dir=.venv --exclude-dir=.git --exclude-dir=__pycache__` 输出为空
+- [ ] `grep -r "xiaolincoding\|xiaolinnote\|公众号@小林\|StarryLink\|starrylink" --exclude-dir=.venv --exclude-dir=.git --exclude-dir=__pycache__` 输出为空
 - [ ] README.md 不含原作者字样,新格式
 - [ ] DEPLOY.md 不含原仓库引用
 - [ ] `git push` 后 GitHub `Starry-1234/StarryLink` 主分支显示 8 个 commit

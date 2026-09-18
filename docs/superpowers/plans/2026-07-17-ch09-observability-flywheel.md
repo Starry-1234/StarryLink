@@ -4,7 +4,7 @@
 
 **Goal:** 给客服系统接 Langfuse 全链路观测 + 按意图 token 账,并建成"三入口低置信度问题池 → 标准化查重待审队列 → 人工审核写回知识库"的数据飞轮闭环,配自动化评估趋势流水线。
 
-**Architecture:** 方案 A"回调为主、脚本为辅"——观测靠 `compile().with_config({"callbacks":[CallbackHandler()]})` 编译时挂一次吃全图(课程 README 姿势);飞轮/评估/成本统计是 make 驱动的批处理脚本;审核后台 = 静态单页 + REST。Spec:`docs/superpowers/specs/2026-07-17-ch09-observability-flywheel-design.md`,课程对齐:`mewhelp-course/ch09-observability-flywheel/README.md`。
+**Architecture:** 方案 A"回调为主、脚本为辅"——观测靠 `compile().with_config({"callbacks":[CallbackHandler()]})` 编译时挂一次吃全图(课程 README 姿势);飞轮/评估/成本统计是 make 驱动的批处理脚本;审核后台 = 静态单页 + REST。Spec:`docs/superpowers/specs/2026-07-17-ch09-observability-flywheel-design.md`,课程对齐:`starrylink-course/ch09-observability-flywheel/README.md`。
 
 **Tech Stack:** Langfuse v3 自部署(独立 docker compose)、langfuse Python SDK(`langfuse.langchain.CallbackHandler`)、LangGraph、SQLAlchemy 2.0 async、FastAPI、复用 ch03 dualwrite / ch04 评估集与指标 / ch05 图节点。
 
@@ -319,7 +319,7 @@ Run: `uv run pytest -v` → 零回归(注意既有 LCQ 相关测试不受 insert
 - [ ] **Step 7: 给 dev 库应用 DDL + Commit**
 
 ```bash
-docker exec -i mewhelp-mysql mysql --default-character-set=utf8mb4 -uroot -proot mewhelp < sql/ch09-ddl.sql
+docker exec -i starrylink-mysql mysql --default-character-set=utf8mb4 -uroot -proot starrylink < sql/ch09-ddl.sql
 git add app/db/models.py app/db/repository.py tests/conftest.py tests/db/test_ch09_flywheel_tables.py
 git commit -m "feat(ch09): 飞轮地基——review_queue/eval_runs ORM + 问题池快照/归并列 + repository 十方法"
 ```
@@ -525,15 +525,15 @@ curl -fsSL https://raw.githubusercontent.com/langfuse/langfuse/main/docker-compo
 1. 给 `langfuse-web` 服务的 environment 追加 headless 初始化变量,起来即有组织/项目/固定 key,免手工点界面:
 
 ```yaml
-      LANGFUSE_INIT_ORG_ID: mewhelp
-      LANGFUSE_INIT_ORG_NAME: MewHelp
-      LANGFUSE_INIT_PROJECT_ID: mewhelp-ch09
-      LANGFUSE_INIT_PROJECT_NAME: mewhelp
-      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: pk-lf-mewhelp-local
-      LANGFUSE_INIT_PROJECT_SECRET_KEY: sk-lf-mewhelp-local
-      LANGFUSE_INIT_USER_EMAIL: admin@mewhelp.local
+      LANGFUSE_INIT_ORG_ID: starrylink
+      LANGFUSE_INIT_ORG_NAME: StarryLink
+      LANGFUSE_INIT_PROJECT_ID: starrylink-ch09
+      LANGFUSE_INIT_PROJECT_NAME: starrylink
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: pk-lf-starrylink-local
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: sk-lf-starrylink-local
+      LANGFUSE_INIT_USER_EMAIL: admin@starrylink.local
       LANGFUSE_INIT_USER_NAME: admin
-      LANGFUSE_INIT_USER_PASSWORD: mewhelp123
+      LANGFUSE_INIT_USER_PASSWORD: starrylink123
 ```
 
 2. 若与现有 mysql/milvus 栈端口冲突(3000/5432/6379/9000/9090),只改宿主侧映射,容器内不动;minio 与 milvus 的 minio 同名冲突时给服务/卷名加 `langfuse-` 前缀。
@@ -545,10 +545,10 @@ curl -fsSL https://raw.githubusercontent.com/langfuse/langfuse/main/docker-compo
 # ch09: Langfuse 自部署观测栈(web:3000 + worker + postgres + clickhouse + redis + minio)
 langfuse-up:
 	docker compose -f docker-compose.langfuse.yml up -d
-	@echo "Langfuse 起中: http://localhost:3000 (admin@mewhelp.local / mewhelp123)"
+	@echo "Langfuse 起中: http://localhost:3000 (admin@starrylink.local / starrylink123)"
 	@echo "首次就绪约 2-3 分钟;key 已 headless 预置,写 .env:"
-	@echo "  LANGFUSE_PUBLIC_KEY=pk-lf-mewhelp-local"
-	@echo "  LANGFUSE_SECRET_KEY=sk-lf-mewhelp-local"
+	@echo "  LANGFUSE_PUBLIC_KEY=pk-lf-starrylink-local"
+	@echo "  LANGFUSE_SECRET_KEY=sk-lf-starrylink-local"
 	@echo "  LANGFUSE_BASE_URL=http://localhost:3000"
 
 langfuse-down:
@@ -1591,7 +1591,7 @@ Run: `uv run pytest tests/core/test_flywheel.py -v` → PASS;全量零回归。
 ```python
 """ch09 飞轮批处理:扫问题池未归并条目 → 标准化+查重 → 待审队列。
 运行:make flywheel(需 mysql + 上游可用)。定时跑给 cron 示例:
-  */30 * * * * cd /path/to/mewhelp && make flywheel >> log/flywheel.log 2>&1
+  */30 * * * * cd /path/to/starrylink && make flywheel >> log/flywheel.log 2>&1
 """
 import asyncio
 import sys
@@ -2035,7 +2035,7 @@ git commit -m "feat(ch09): 审核 API——通过即写回知识库(dualwrite �
 """ch09 自动化评估流水线:复用 ch04 评估集与指标,定期跑、落 eval_runs、连趋势。
 指标:检索段 Recall@10 / MRR(hybrid_rerank,可答桶),生成段 Faithfulness + D 桶拒答率。
 运行:make eval-flywheel(TRIGGER=手动|定时,默认手动)。cron 示例:
-  0 6 * * * cd /path/to/mewhelp && make eval-flywheel TRIGGER=定时 >> log/eval.log 2>&1
+  0 6 * * * cd /path/to/starrylink && make eval-flywheel TRIGGER=定时 >> log/eval.log 2>&1
 趋势:读最近 10 轮,对比上一轮涨跌;任何指标下滑标 ⚠——README:「重点全在这条趋势线上」。
 产物:dev-notes/ch09-eval-trend.txt
 """

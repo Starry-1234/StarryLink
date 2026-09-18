@@ -1,6 +1,6 @@
 # Ch09 设计:可观测性与数据飞轮(Langfuse 接入 + Cost Control + 三入口问题池 + 标准化查重待审 + 人工审核写回 + 评估趋势)
 
-> 对齐课程文档 `mewhelp-course/ch09-observability-flywheel/README.md`:前半装可观测性(Langfuse 调用树、按意图算 token 账、评估趋势线),后半装数据飞轮(三入口低置信度问题池 → 标准化查重 → 人工审核三道闸 → 写回知识库闭环)。
+> 对齐课程文档 `starrylink-course/ch09-observability-flywheel/README.md`:前半装可观测性(Langfuse 调用树、按意图算 token 账、评估趋势线),后半装数据飞轮(三入口低置信度问题池 → 标准化查重 → 人工审核三道闸 → 写回知识库闭环)。
 
 ## 1. 背景与目标
 

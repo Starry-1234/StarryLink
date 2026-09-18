@@ -23,7 +23,7 @@
 
 ## 权威来源
 - spec:`docs/superpowers/specs/2026-07-16-ch06-intent-recognition-design.md`
-- 章节:`mewhelp-course/ch06-intent-recognition/README.md`(扩写 prompt L33-48;意图四件套 prompt L120-140;`route_by_intent` L208-220;缺信息执行阶段补 L168-182;分流出口 L184-224)
+- 章节:`starrylink-course/ch06-intent-recognition/README.md`(扩写 prompt L33-48;意图四件套 prompt L120-140;`route_by_intent` L208-220;缺信息执行阶段补 L168-182;分流出口 L184-224)
 
 ---
 
@@ -1350,7 +1350,7 @@ async def create_refund_action(req: CreateRefundRequest) -> CreateRefundResponse
 Run: `.venv/bin/pytest tests/test_refund_api.py -v`
 Expected: PASS。
 对真实库应用迁移(端到端验收前必须跑):
-Run: `docker exec -i mewhelp-mysql mysql --default-character-set=utf8mb4 -uroot -proot mewhelp < sql/ch06-ticket-type.sql`
+Run: `docker exec -i starrylink-mysql mysql --default-character-set=utf8mb4 -uroot -proot starrylink < sql/ch06-ticket-type.sql`
 
 - [ ] **Step 6: Commit**
 
