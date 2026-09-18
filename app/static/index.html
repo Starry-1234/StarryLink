@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StarryLink · 智能客服</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='2' y='2' width='4' height='4' fill='%232b2632'/><rect x='10' y='2' width='4' height='4' fill='%232b2632'/><rect x='2' y='4' width='12' height='9' fill='%232b2632'/><rect x='3' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='11' y='3' width='2' height='3' fill='%23ff9f57'/><rect x='3' y='5' width='10' height='7' fill='%23ff9f57'/><rect x='5' y='7' width='1' height='2' fill='%232b2632'/><rect x='10' y='7' width='1' height='2' fill='%232b2632'/><rect x='7' y='9' width='2' height='1' fill='%23ff8095'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'><rect x='7' y='0' width='2' height='16' fill='%23ffd54f'/><rect x='0' y='6' width='16' height='4' fill='%23ffd54f'/><rect x='3' y='3' width='3' height='3' fill='%23ffd54f'/><rect x='10' y='3' width='3' height='3' fill='%23ffd54f'/><rect x='3' y='10' width='3' height='3' fill='%23ffd54f'/><rect x='10' y='10' width='3' height='3' fill='%23ffd54f'/></svg>" />
   <style>
     :root {
       --ink: #2b2632;
@@ -539,19 +539,14 @@
     const SESSION_KEY = "starrylink_session_id";      // 稳定用户标识,作 user_id
     const CONV_KEY = "starrylink_conversation_id";     // 当前会话 id,由后端 done 帧回传
     const SUGGESTIONS = ["退换货政策是怎样的?", "怎么查我的物流进度?", "猫粮怎么选?", "会员有什么权益?"];
-    const CAT_SVG =
+    const STAR_SVG =
       '<svg viewBox="0 0 16 16" shape-rendering="crispEdges">' +
-      '<rect x="2" y="2" width="4" height="4" fill="#2b2632"/>' +
-      '<rect x="10" y="2" width="4" height="4" fill="#2b2632"/>' +
-      '<rect x="2" y="4" width="12" height="9" fill="#2b2632"/>' +
-      '<rect x="3" y="3" width="2" height="3" fill="#ff9f57"/>' +
-      '<rect x="11" y="3" width="2" height="3" fill="#ff9f57"/>' +
-      '<rect x="3" y="5" width="10" height="7" fill="#ff9f57"/>' +
-      '<rect x="5" y="7" width="1" height="2" fill="#2b2632"/>' +
-      '<rect x="10" y="7" width="1" height="2" fill="#2b2632"/>' +
-      '<rect x="7" y="9" width="2" height="1" fill="#ff8095"/>' +
-      '<rect x="4" y="10" width="1" height="1" fill="#ffd7a8"/>' +
-      '<rect x="11" y="10" width="1" height="1" fill="#ffd7a8"/>' +
+      '<rect x="7" y="0" width="2" height="16" fill="#ffd54f"/>' +
+      '<rect x="0" y="6" width="16" height="4" fill="#ffd54f"/>' +
+      '<rect x="3" y="3" width="3" height="3" fill="#ffd54f"/>' +
+      '<rect x="10" y="3" width="3" height="3" fill="#ffd54f"/>' +
+      '<rect x="3" y="10" width="3" height="3" fill="#ffd54f"/>' +
+      '<rect x="10" y="10" width="3" height="3" fill="#ffd54f"/>' +
       "</svg>";
     // 点赞/点踩大拇指(矢量填充,fill=currentColor:平时 ink、点亮时随按钮变白)
     const THUMB_UP_SVG =
@@ -563,7 +558,7 @@
     const sendBtn = document.getElementById("send");
     const newChatBtn = document.getElementById("new-chat");
 
-    for (const el of document.querySelectorAll("[data-cat]")) el.innerHTML = CAT_SVG;
+    for (const el of document.querySelectorAll("[data-cat]")) el.innerHTML = STAR_SVG;
 
     function getUserId() {
       let id = localStorage.getItem(SESSION_KEY);
@@ -590,7 +585,7 @@
       const wrap = document.createElement("div");
       wrap.className = "empty";
       wrap.innerHTML =
-        '<div class="mascot">' + CAT_SVG + "</div>" +
+        '<div class="mascot">' + STAR_SVG + "</div>" +
         "<h1>你好,我是小星</h1>" +
         "<p>StarryLink的智能客服,商品、订单、售后都能问我~</p>" +
         '<div class="chips"></div>';
@@ -618,7 +613,7 @@
       if (role === "bot") {
         const av = document.createElement("div");
         av.className = "avatar sm";
-        av.innerHTML = CAT_SVG;
+        av.innerHTML = STAR_SVG;
         row.appendChild(av);
       }
       const bubble = document.createElement("div");
